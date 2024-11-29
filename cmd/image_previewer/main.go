@@ -10,6 +10,7 @@ import (
 
 	"github.com/heltirj/image_previewer/internal/app"
 	"github.com/heltirj/image_previewer/internal/cache"
+	"github.com/heltirj/image_previewer/internal/config"
 	"github.com/heltirj/image_previewer/internal/logger"
 	"github.com/heltirj/image_previewer/internal/server/http"
 )
@@ -17,9 +18,9 @@ import (
 const configPath = "./configs/config.yaml"
 
 func main() {
-	config, err := NewConfig(configPath)
+	conf, err := config.NewConfig(configPath)
 	if err != nil {
-		log.Fatalf("failed to load config: %v", err)
+		log.Fatalf("failed to load conf: %v", err)
 	}
 
 	logg := logger.New(logger.LogLevelInfo)
@@ -27,14 +28,14 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(),
 		syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 
-	a := app.New(logg, cache.NewLruImageCache(config.LRUSize, config.StoragePath))
+	a := app.New(logg, cache.NewLruImageCache(conf.LRUSize, conf.StoragePath))
 
 	err = a.Cache.Load()
 	if err != nil {
 		log.Fatalf("error loading cache: %s", err)
 	}
 
-	server := http.NewServer(logg, a, config.Port)
+	server := http.NewServer(logg, a, conf.Port)
 
 	defer cancel()
 

@@ -6,12 +6,22 @@ package integration
 import (
 	"context"
 	"fmt"
+	"github.com/heltirj/image_previewer/internal/config"
 	"net/http"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func getHostAddr() (string, error) {
+	conf, err := config.NewConfig("../../configs/config.yaml")
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("http://localhost:%d", conf.Port), nil
+}
 
 func TestIntegrationBasic(t *testing.T) {
 	tests := []struct {
@@ -20,26 +30,31 @@ func TestIntegrationBasic(t *testing.T) {
 		expectedStatus int
 	}{
 		{
-			"Image Exists in Cache", "http://localhost:8080/300/300/nginx/test_image_1.jpg",
+			"Image Exists in Cache", "/300/300/nginx/test_image_1.jpg",
 			http.StatusOK,
 		},
 		{
-			"Image Not Found (404)", "http://localhost:8080/300/300/nginx/test_image_404.jpg",
+			"Image Not Found (404)", "/300/300/nginx/test_image_404.jpg",
 			http.StatusNotFound,
 		},
 		{
-			"File is Not an Image", "http://localhost:8080/300/300/nginx/malicious_file.txt",
+			"File is Not an Image", "/300/300/nginx/malicious_file.txt",
 			http.StatusUnsupportedMediaType,
 		},
 		{
-			"Server Returns Error", "http://localhost:8080/300/300/nginx:8081/test_image_1.jpg",
+			"Server Returns Error", "/300/300/nginx:8081/test_image_1.jpg",
 			http.StatusInternalServerError,
 		},
-		{"Image Returned", "http://localhost:8080/300/300/nginx/test_image_1.jpg", http.StatusOK},
+		{"Image Returned", "/300/300/nginx/test_image_1.jpg", http.StatusOK},
 		{
-			"Image Smaller Than Required Size", "http://localhost:8080/1000/1000/nginx/test_image_1.jpg",
+			"Image Smaller Than Required Size", "/1000/1000/nginx/test_image_1.jpg",
 			http.StatusOK,
 		},
+	}
+
+	addr, err := getHostAddr()
+	if err != nil {
+		t.Fatalf("failed to get config: %v", err)
 	}
 
 	for _, tt := range tests {
@@ -50,7 +65,7 @@ func TestIntegrationBasic(t *testing.T) {
 
 			ctx := context.Background()
 
-			req, err := http.NewRequestWithContext(ctx, http.MethodGet, tt.url, nil)
+			req, err := http.NewRequestWithContext(ctx, http.MethodGet, addr+tt.url, nil)
 			if err != nil {
 				t.Fatalf("failed to create image resize request: %v", err)
 			}
@@ -74,9 +89,14 @@ func TestIntegrationCache(t *testing.T) {
 		Timeout: time.Second * 10,
 	}
 
+	addr, err := getHostAddr()
+	if err != nil {
+		t.Fatalf("failed to get config: %v", err)
+	}
+
 	ctx := context.Background()
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, "http://localhost:8080/clear", nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, addr+"/clear", nil)
 	if err != nil {
 		t.Fatalf("failed to create clear cache request: %v", err)
 	}
@@ -87,7 +107,7 @@ func TestIntegrationCache(t *testing.T) {
 	}
 	resp.Body.Close()
 
-	req, err = http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("http://localhost:8080/200/300/%s", imgURL),
+	req, err = http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/200/300/%s", addr, imgURL),
 		nil)
 	if err != nil {
 		t.Fatalf("failed to create image resize request: %v", err)
@@ -101,7 +121,7 @@ func TestIntegrationCache(t *testing.T) {
 	assert.Equal(t, resp.StatusCode, http.StatusOK)
 	assert.Equal(t, resp.Header.Get("Origin"), "http://"+imgURL)
 
-	req, err = http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("http://localhost:8080/200/300/%s", imgURL),
+	req, err = http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("%s/200/300/%s", addr, imgURL),
 		nil)
 	if err != nil {
 		t.Fatalf("failed to create image resize request: %v", err)
