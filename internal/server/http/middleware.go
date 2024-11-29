@@ -20,7 +20,7 @@ func (s *Server) loggingMiddleware(next http.Handler) http.Handler {
 
 		if rw.statusCode != http.StatusOK {
 			s.logger.ErrorKV("error to handle request", "ip", ip, "time", time.Now(), "method", r.Method, "path",
-				r.URL.Path, "httpVersion", r.Proto, "statusCode", rw.statusCode, "body", string(rw.body), "latency",
+				r.URL.Path, "httpVersion", r.Proto, "statusCode", rw.statusCode, "headers", rw.Header(), "latency",
 				latency,
 				"userAgent",
 				userAgent)
