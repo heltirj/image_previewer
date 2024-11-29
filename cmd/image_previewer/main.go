@@ -2,15 +2,16 @@ package main
 
 import (
 	"context"
-	"github.com/heltirj/image_previewer/internal/app"
-	"github.com/heltirj/image_previewer/internal/cache"
-	"github.com/heltirj/image_previewer/internal/logger"
-	"github.com/heltirj/image_previewer/internal/server/http"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/heltirj/image_previewer/internal/app"
+	"github.com/heltirj/image_previewer/internal/cache"
+	"github.com/heltirj/image_previewer/internal/logger"
+	"github.com/heltirj/image_previewer/internal/server/http"
 )
 
 const configPath = "./configs/config.yaml"
@@ -55,5 +56,4 @@ func main() {
 		cancel()
 		os.Exit(1) //nolint:gocritic
 	}
-
 }

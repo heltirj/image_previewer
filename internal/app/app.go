@@ -5,13 +5,14 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/heltirj/image_previewer/internal/image_transformer"
 	"image"
 	"image/jpeg"
 	"net/http"
 	"net/url"
 	"regexp"
 	"strconv"
+
+	"github.com/heltirj/image_previewer/internal/imagetransformer"
 )
 
 type Cache interface {
@@ -94,7 +95,7 @@ func (a *App) GetResizedImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	img, err := image_transformer.Resize(srcImg, width, height)
+	img, err := imagetransformer.Resize(srcImg, width, height)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -133,7 +134,7 @@ func (a *App) doRequest(imgURL string, r *http.Request) (*http.Response, error) 
 
 	sendRequest := func(scheme string) (*http.Response, error) {
 		parsedURL.Scheme = scheme
-		req, err := http.NewRequest(r.Method, parsedURL.String(), r.Body)
+		req, err := http.NewRequestWithContext(r.Context(), r.Method, parsedURL.String(), r.Body)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create request: %w", err)
 		}

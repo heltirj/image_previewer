@@ -1,9 +1,9 @@
-package image_transformer
+package imagetransformer
 
 import (
-	"golang.org/x/image/draw"
 	"image"
-	_ "image/jpeg"
+
+	"golang.org/x/image/draw"
 )
 
 type SubImager interface {
@@ -11,7 +11,6 @@ type SubImager interface {
 }
 
 func Resize(img image.Image, width, height int) (image.Image, error) {
-
 	dst := image.NewRGBA(image.Rect(0, 0, width, height))
 
 	cropped := crop(img, width, height)

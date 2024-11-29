@@ -9,9 +9,10 @@ import (
 
 func createTestImage() image.Image {
 	img := image.NewRGBA(image.Rect(0, 0, 100, 100))
-	for x := 0; x < 100; x++ {
-		for y := 0; y < 100; y++ {
-			img.Set(x, y, color.RGBA{uint8(x), uint8(y), 255, 255})
+	var x, y uint8
+	for x = 0; x < 100; x++ {
+		for y = 0; y < 100; y++ {
+			img.Set(int(x), int(y), color.RGBA{x, y, 255, 255})
 		}
 	}
 	return img

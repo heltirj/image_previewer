@@ -1,4 +1,4 @@
-package image_transformer
+package imagetransformer
 
 import (
 	"image"
@@ -22,7 +22,7 @@ func (ti *testImage) Bounds() image.Rectangle {
 	return ti.bounds
 }
 
-func (ti *testImage) At(x, y int) color.Color {
+func (ti *testImage) At(_, _ int) color.Color {
 	return color.RGBA{255, 0, 0, 255} // Красный цвет для тестирования
 }
 
@@ -177,5 +177,4 @@ func TestResizeGopherImage(t *testing.T) {
 				resizedImg.Bounds().Dy())
 		}
 	}
-
 }

@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/heltirj/image_previewer/internal/logger"
-	"gopkg.in/yaml.v3"
 	"io"
 	"os"
+
+	"github.com/heltirj/image_previewer/internal/logger"
+	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
