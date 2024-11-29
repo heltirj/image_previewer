@@ -11,7 +11,6 @@ type Config struct {
 	LogLevel    logger.LogLevel `yaml:"logLevel"`
 	StoragePath string          `yaml:"storagePath"`
 	LRUSize     int             `yaml:"lruSize"`
-	Host        string          `yaml:"host"`
 	Port        int             `yaml:"port"`
 }
 

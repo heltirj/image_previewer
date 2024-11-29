@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  image_previewer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"  # Пробрасываем порт на локальную машину
+    volumes:
+      - ./configs:/app/configs  # Монтируем конфигурации
+    environment:
+      - ENV=production  # Пример переменной окружения
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - ./nginx/test_images:/usr/share/nginx/html/test_images
+    depends_on:
+      - image_previewer
+

@@ -13,7 +13,6 @@ import (
 	"time"
 )
 
-const version = "1.0.0"
 const configPath = "./configs/config.yaml"
 
 func main() {
@@ -34,7 +33,7 @@ func main() {
 		log.Fatalf("error loading cache: %s", err)
 	}
 
-	server := http.NewServer(logg, a, config.Host, config.Port)
+	server := http.NewServer(logg, a, config.Port)
 
 	defer cancel()
 

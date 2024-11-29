@@ -3,7 +3,6 @@ package cache
 import (
 	"image"
 	"image/color"
-	"io/ioutil"
 	"os"
 	"testing"
 )
@@ -19,7 +18,7 @@ func createTestImage() image.Image {
 }
 
 func TestLruImageCache(t *testing.T) {
-	dir, err := ioutil.TempDir("", "cache_test")
+	dir, err := os.MkdirTemp("", "cache_test")
 	if err != nil {
 		t.Fatalf("Failed to create temp directory: %v", err)
 	}
@@ -73,7 +72,7 @@ func TestLruImageCache(t *testing.T) {
 }
 
 func TestLruImageCache_Load(t *testing.T) {
-	dir, err := ioutil.TempDir("", "cache_test")
+	dir, err := os.MkdirTemp("", "cache_test")
 	if err != nil {
 		t.Fatalf("Failed to create temp directory: %v", err)
 	}
@@ -100,7 +99,7 @@ func TestLruImageCache_Load(t *testing.T) {
 }
 
 func TestLruImageCache_SaveError(t *testing.T) {
-	dir, err := ioutil.TempDir("", "cache_test")
+	dir, err := os.MkdirTemp("", "cache_test")
 	if err != nil {
 		t.Fatalf("Failed to create temp directory: %v", err)
 	}
@@ -110,7 +109,6 @@ func TestLruImageCache_SaveError(t *testing.T) {
 
 	img := createTestImage()
 
-	// Remove directory to simulate error
 	os.RemoveAll(dir)
 
 	err = cache.Save("image.jpg", img)
@@ -120,7 +118,7 @@ func TestLruImageCache_SaveError(t *testing.T) {
 }
 
 func TestLruImageCache_LoadError(t *testing.T) {
-	dir, err := ioutil.TempDir("", "cache_test")
+	dir, err := os.MkdirTemp("", "cache_test")
 	if err != nil {
 		t.Fatalf("Failed to create temp directory: %v", err)
 	}

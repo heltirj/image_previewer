@@ -121,7 +121,11 @@ func TestResizeGopherImage(t *testing.T) {
 	inputFile := "testdata/_gopher_original_1024x504.jpg"
 	outputDir := "output"
 
-	os.MkdirAll(outputDir, os.ModePerm)
+	err := os.MkdirAll(outputDir, os.ModePerm)
+	if err != nil {
+		t.Fatalf("Expected no error, got: %v", err)
+	}
+
 	defer os.RemoveAll(outputDir)
 
 	sizes := []Size{

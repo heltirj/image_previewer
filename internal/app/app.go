@@ -3,6 +3,7 @@ package app
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"github.com/heltirj/image_previewer/internal/image_transformer"
 	"image"
@@ -17,6 +18,7 @@ type Cache interface {
 	Save(key string, img image.Image) error
 	Get(key string) image.Image
 	Load() error
+	Clear() error
 }
 
 type Logger interface {
@@ -81,9 +83,12 @@ func (a *App) GetResizedImage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("origin", response.Request.URL.String())
 	srcImg, _, err := image.Decode(response.Body)
 	if err != nil {
-		w.Header()["Status"] = []string{http.StatusText(http.StatusBadRequest)}
+		if errors.Is(err, image.ErrFormat) {
+			http.Error(w, err.Error(), http.StatusUnsupportedMediaType)
+		}
 
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -102,7 +107,22 @@ func (a *App) GetResizedImage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	returnImage(w, img)
+}
 
+func (a *App) ClearCache(w http.ResponseWriter, _ *http.Request) {
+	err := a.Cache.Clear()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+
+	_, err = w.Write([]byte("cache has been cleared"))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func (a *App) doRequest(imgURL string, r *http.Request) (*http.Response, error) {

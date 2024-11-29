@@ -1,2 +1,7 @@
-answers.md
+/bin
+.DS_STORE
+.DS_Store
+/.idea
+/.vscode
+
 storage/*

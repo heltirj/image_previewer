@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"path/filepath"
 	"sync"
 )
 
@@ -102,6 +103,35 @@ func (l *LruImageCache) Load() error {
 		}
 	}
 
+	return nil
+}
+
+func (l *LruImageCache) Clear() error {
+	l.m.Lock()
+	defer l.m.Unlock()
+
+	l.items = make(map[string]*ListItem, l.capacity)
+	l.queue = NewList()
+
+	entries, err := os.ReadDir(l.dirPath)
+	if err != nil {
+		return fmt.Errorf("error reading directory: %w", err)
+	}
+
+	for _, entry := range entries {
+		fullPath := filepath.Join(l.dirPath, entry.Name())
+		if entry.IsDir() {
+			err := os.RemoveAll(fullPath)
+			if err != nil {
+				return fmt.Errorf("error removing directory %s: %w", entry.Name(), err)
+			}
+		} else {
+			err := os.Remove(fullPath)
+			if err != nil {
+				return fmt.Errorf("error removing file %s: %w", entry.Name(), err)
+			}
+		}
+	}
 	return nil
 }
 
