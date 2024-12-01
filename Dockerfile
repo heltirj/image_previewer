@@ -10,7 +10,6 @@ RUN apk --no-cache add ca-certificates
 COPY --from=builder app/bin/image_previewer /bin/image_previewer
 
 COPY configs/ /app/configs/
-COPY storage/ /app/storage/
 
 WORKDIR /app
 EXPOSE 8080

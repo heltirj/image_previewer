@@ -85,6 +85,13 @@ func (l *LruImageCache) Get(fileName string) image.Image {
 }
 
 func (l *LruImageCache) Load() error {
+	_, err := os.Stat(l.dirPath)
+	if os.IsNotExist(err) {
+		if err := os.MkdirAll(l.dirPath, os.ModePerm); err != nil {
+			return fmt.Errorf("failed to create directory: %w", err)
+		}
+	}
+
 	files, err := os.ReadDir(l.dirPath)
 	if err != nil {
 		return fmt.Errorf("failed to read dir: %w", err)

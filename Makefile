@@ -2,7 +2,7 @@
 BINARY_NAME=./bin/image_previewer
 
 # Укажите вашу основную директорию
-SRC_DIR=./cmd/api
+SRC_DIR=./cmd/image_previewer
 
 # Укажите возможности для компиляции (различные архитектуры)
 GOOS=linux
