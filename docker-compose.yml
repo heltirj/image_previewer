@@ -6,11 +6,9 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"  # Пробрасываем порт на локальную машину
+      - "8080:8080"  
     volumes:
-      - ./configs:/app/configs  # Монтируем конфигурации
-    environment:
-      - ENV=production  # Пример переменной окружения
+      - ./configs:/app/configs  
   nginx:
     image: nginx:latest
     ports:

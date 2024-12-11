@@ -12,5 +12,4 @@ COPY --from=builder app/bin/image_previewer /bin/image_previewer
 COPY configs/ /app/configs/
 
 WORKDIR /app
-EXPOSE 8080
 ENTRYPOINT ["/bin/image_previewer"]
